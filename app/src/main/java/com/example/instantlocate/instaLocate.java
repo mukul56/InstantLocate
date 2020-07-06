@@ -1,20 +1,23 @@
 package com.example.instantlocate;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
+
 
 
 public class instaLocate extends Service implements LocationListener {
@@ -24,29 +27,33 @@ public class instaLocate extends Service implements LocationListener {
     Location location;
     double latitide, longitude;
     protected LocationManager locationManager;
-
+    Geocoder geocoder;
 
 
     public instaLocate(Context context) {
         this.context = context;
         locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-
         getlocation();
     }
 
     private void getlocation() {
         try {
-
-            //  locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-
             checkGPs = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             checkNtwr = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
             if (checkNtwr && checkGPs) {
                 locaPossible = true;
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        getGpsLocation();
+                    }
+                });
             }
 
         } catch (Exception e) {
-            Log.d("location",e+"");
+            Log.d("location", e + "");
         }
     }
 
@@ -54,34 +61,25 @@ public class instaLocate extends Service implements LocationListener {
     public void getNtwrLocation() {
 
         if (checkNtwr) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 0, this);
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (location != null) {
                 latitide = getlatitude();
                 longitude = getlongitude();
-                //  Toast.makeText(this, "latitude :" + latitide + "  longitude :" + longitude, Toast.LENGTH_SHORT).show();
-            } else {
-                //Toast.makeText(this, "Location is Null", Toast.LENGTH_SHORT).show();
             }
 
         }
     }
 
     @SuppressLint("MissingPermission")
-    public void getGpsLocation() {
+    private void getGpsLocation() {
 
-        if (checkGPs) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(location!=null){
-                latitide =  getlatitude();
-                longitude = getlongitude();
-                //  Toast.makeText(this,"latitude :"+latitide+"  longitude :"+longitude,Toast.LENGTH_SHORT).show();
-            }
-            else{
-                // Toast.makeText(this,"Location is Null",Toast.LENGTH_SHORT).show();
+        while(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (checkGPs) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, this);
             }
         }
+
 
     }
 
@@ -155,17 +153,15 @@ public class instaLocate extends Service implements LocationListener {
         return latitide;
     }
 
-/*    public List<Address>LocationName() throws IOException {
-
+   /* public String getAddress(double lat, double lng) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-
-        latitide = getlatitude();
-         longitude = getlongitude();
-         List<Address> add = geocoder.getFromLocation(latitide,longitude,1);
-         return add;
-
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+            return obj.getSubLocality();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }*/
-
-
-
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,19 +21,21 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
 
-    Button ntwkLocation , GpsLocation;
+    Button ntwkLocation, GpsLocation;
     double lon, lat;
+    TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        textView = (TextView) findViewById(R.id.name);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
         final instaLocate location = new instaLocate(this);
 
-        if(!location.locaPossible){
+        if (!location.locaPossible) {
             location.showSettingsAlert();
             location.locaPossible = true;
         }
@@ -42,32 +45,14 @@ public class MainActivity extends AppCompatActivity {
         ntwkLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(location.checkNtwr){
+                if (location.checkNtwr) {
                     location.getNtwrLocation();
                     lat = location.getlatitude();
                     lon = location.getlongitude();
+                    Toast.makeText(MainActivity.this, "latitude :" + lat + " longitude :" + lon, Toast.LENGTH_SHORT).show();
 
-                    Toast.makeText(MainActivity.this, "latitude :"+lat + " longitude :"+lon, Toast.LENGTH_SHORT).show();
-
-                }
-                else {
+                } else {
                     Toast.makeText(MainActivity.this, "Location is unavailable", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-        GpsLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(location.checkGPs){
-                    location.getGpsLocation();
-                    Toast.makeText(MainActivity.this, "latitude :"+lat + " longitude :"+lon, Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Toast.makeText(MainActivity.this, "Location is unavailable", Toast.LENGTH_SHORT).show();
-
                 }
             }
         });
