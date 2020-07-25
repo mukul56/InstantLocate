@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,9 +17,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+
 import androidx.annotation.Nullable;
-
-
 
 public class instaLocate extends Service implements LocationListener {
 
@@ -59,7 +59,6 @@ public class instaLocate extends Service implements LocationListener {
 
     @SuppressLint("MissingPermission")
     public void getNtwrLocation() {
-
         if (checkNtwr) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 0, this);
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -67,22 +66,64 @@ public class instaLocate extends Service implements LocationListener {
                 latitide = getlatitude();
                 longitude = getlongitude();
             }
-
         }
     }
 
     @SuppressLint("MissingPermission")
     private void getGpsLocation() {
 
-        while(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        while (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (checkGPs) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, this);
             }
         }
-
-
     }
 
+    public synchronized void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setTitle("GPS is not Enabled!");
+        alertDialog.setMessage("Do you want to turn on GPS?");
+        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                context.startActivity(intent);
+                getlocation();
+            }
+        });
+        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialog.show();
+    }
+
+    public double getlongitude() {
+        if (location != null) {
+            longitude = location.getLongitude();
+        }
+        return longitude;
+    }
+
+    public double getlatitude() {
+        if (location != null) {
+            latitide = location.getLatitude();
+        }
+        return latitide;
+    }
+
+
+    //To stop location service
+    public void stop() {
+        onDestroy();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        checkGPs = false;
+        locationManager.removeUpdates(this);
+    }
 
     @Nullable
     @Override
@@ -110,58 +151,4 @@ public class instaLocate extends Service implements LocationListener {
 
     }
 
-
-    public synchronized void showSettingsAlert() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-
-
-        alertDialog.setTitle("GPS is not Enabled!");
-
-        alertDialog.setMessage("Do you want to turn on GPS?");
-
-
-        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                context.startActivity(intent);
-                getlocation();
-            }
-        });
-
-
-        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-
-        alertDialog.show();
-    }
-
-    public double getlongitude() {
-        if (location != null) {
-            longitude = location.getLongitude();
-        }
-        return longitude;
-    }
-
-    public double getlatitude() {
-        if (location != null) {
-            latitide = location.getLatitude();
-        }
-        return latitide;
-    }
-
-   /* public String getAddress(double lat, double lng) {
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-            Address obj = addresses.get(0);
-            return obj.getSubLocality();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 }

@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,11 +51,14 @@ public class MainActivity extends AppCompatActivity {
                     lat = location.getlatitude();
                     lon = location.getlongitude();
                     Toast.makeText(MainActivity.this, "latitude :" + lat + " longitude :" + lon, Toast.LENGTH_SHORT).show();
-
                 } else {
                     Toast.makeText(MainActivity.this, "Location is unavailable", Toast.LENGTH_SHORT).show();
                 }
+
+
+
             }
         });
+
     }
 }
