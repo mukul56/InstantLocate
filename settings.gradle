@@ -1,2 +1,3 @@
+include ':Instantlocate'
 include ':app'
 rootProject.name = "InstantLocate"

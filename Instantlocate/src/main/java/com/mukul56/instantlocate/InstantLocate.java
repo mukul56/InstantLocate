@@ -1,4 +1,4 @@
-package com.example.instantlocate;
+package com.mukul56.instantlocate;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -6,13 +6,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
@@ -20,48 +19,63 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-public class instaLocate extends Service implements LocationListener {
+public class InstantLocate extends Service implements LocationListener {
 
+    protected Thread myGpsThread;
     private Context context;
-    boolean checkGPs = false, checkNtwr = false, locaPossible = false;
-    Location location;
-    double latitide, longitude;
-    protected LocationManager locationManager;
-    Geocoder geocoder;
+    private boolean checkGPs = false, checkNtwr = false;
+    private Location location;
+    private double latitide, longitude;
+    private LocationManager locationManager;
 
 
-    public instaLocate(Context context) {
+    public InstantLocate(Context context) {
         this.context = context;
         locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        getlocation();
+        initLocation();
     }
 
-    private void getlocation() {
-        try {
-            checkGPs = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            checkNtwr = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if (checkNtwr && checkGPs) {
-                locaPossible = true;
-                AsyncTask.execute(new Runnable() {
+    //Initializing location
+    private void initLocation() {
+        checkGPs = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        checkNtwr = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        final Handler handler = new Handler();
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Looper.prepare();
                         getGpsLocation();
                     }
                 });
+                synchronized (this) {
+                    try {
+                        wait(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        locationManager.removeUpdates(InstantLocate.this);
+                    }
+                }, 5000);
             }
-
-        } catch (Exception e) {
-            Log.d("location", e + "");
-        }
+        };
+        Thread myThread = new Thread(myRunnable);
+        myThread.start();
     }
 
+    //Function to get instant Location
     @SuppressLint("MissingPermission")
-    public void getNtwrLocation() {
+    public void instantLocation() {
         if (checkNtwr) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 0, this);
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
             if (location != null) {
                 latitide = getlatitude();
                 longitude = getlongitude();
@@ -69,14 +83,29 @@ public class instaLocate extends Service implements LocationListener {
         }
     }
 
+    public void getContinuousLocation(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                while (checkGPs) {
+                    try {
+                        getGpsLocation();
+                        Log.i("loc", "location called");
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
     @SuppressLint("MissingPermission")
     private void getGpsLocation() {
-
-        while (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            if (checkGPs) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, this);
-            }
-        }
+        Log.i("Loca","called");
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, this);
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 
     public synchronized void showSettingsAlert() {
@@ -87,7 +116,7 @@ public class instaLocate extends Service implements LocationListener {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 context.startActivity(intent);
-                getlocation();
+                initLocation();
             }
         });
         alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -112,17 +141,16 @@ public class instaLocate extends Service implements LocationListener {
         return latitide;
     }
 
+    public boolean providerEnabled() {
+        return checkGPs && checkNtwr;
+    }
+
 
     //To stop location service
     public void stop() {
-        onDestroy();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
         checkGPs = false;
         locationManager.removeUpdates(this);
+        onDestroy();
     }
 
     @Nullable
