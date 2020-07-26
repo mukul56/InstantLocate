@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -83,7 +82,7 @@ public class InstantLocate extends Service implements LocationListener {
         }
     }
 
-    public void getContinuousLocation(){
+    public void getContinuousLocation() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +102,7 @@ public class InstantLocate extends Service implements LocationListener {
 
     @SuppressLint("MissingPermission")
     private void getGpsLocation() {
-        Log.i("Loca","called");
+        Log.i("Loca", "called");
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, this);
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
@@ -151,6 +150,10 @@ public class InstantLocate extends Service implements LocationListener {
         checkGPs = false;
         locationManager.removeUpdates(this);
         onDestroy();
+    }
+
+    public boolean isGpsEnabled() {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     @Nullable
