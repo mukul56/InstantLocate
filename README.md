@@ -29,6 +29,9 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 
 
 **Initialize the InstantLocate by using following line:**
+![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/init.png).
+
+
 
 **Methods of InstantLocate:**
 
