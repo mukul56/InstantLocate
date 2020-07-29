@@ -28,6 +28,9 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 ![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/reqper.png).
 
 
+> For fethching location it is necessary to first Request for required permissions
+
+
 **Initialize the InstantLocate by using following line:**
 ![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/init.png).
 
@@ -42,4 +45,13 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
  5. **stop()** *This method is used to stop fetching of location*
  6. **isGpsEnabled()** *This method is used to check Gps is enabled or not. If Gps is not enabled then you should call* **showSettingAlert()** *to enable Gps*
 
+ ## Demonstration
+1. If you want to get instantLocation then you need not to call stop() method
+![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/instloCode.png).
+
+
+2. If you call getContinuousLocation then you should call stop() method to stop fetching of location
+![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/contlocation.png).
+
+__________________________________________________________________________________________________________________________________________________________________
 
