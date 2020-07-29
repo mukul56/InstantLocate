@@ -22,10 +22,10 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 **First you have to request for permissions which you declared  in your Manifest**
 
 1. Create an Array of Permissions 
-![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/perarra.png).
+![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/p.png)
 
 2. Request For Permissions
-![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/reqper.png).
+![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/reqper.png)
 
 
 > For fethching location it is necessary to first Request for required permissions
