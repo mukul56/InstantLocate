@@ -6,15 +6,21 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 
 ##  **How to Use**
 ### 1. Add repository to build.gradle (project level)
-  ![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/jit.png).
-
+    allprojects{
+		  repositories{
+			  maven{ url 'https://jitpack.io'}  
+	           }
+     }
 ### 2. Add dependency to build.gradle (app level)
-  ![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/dep.png).
+    dependencies {
+         implementation 'com.github.mukul56:InstantLocate:1.0'        
+         }
 
 
 ### 3. Add Permissions in your Manifest
-  ![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/permis.png).
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>     
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>                      
+    <uses-permission android:name="android.permission.INTERNET"/>     
 
 
 # Documentation
@@ -22,18 +28,20 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 **First you have to request for permissions which you declared  in your Manifest**
 
 1. Create an Array of Permissions 
-![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/p.png)
-
+    
+    String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};   
+    
 2. Request For Permissions
-![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/reqper.png)
+
+     ActivityCompat.requestPermissions(this, permissions, 1); 
+
 
 
 > For fethching location it is necessary to first Request for required permissions
 
 
 **Initialize the InstantLocate by using following line:**
-![](https://github.com/mukul56/InstantLocate/blob/master/app/src/main/res/drawable/init.png).
-
+    InstantLocate instantLocate = new InstantLocate(this);      
 
 
 **Methods of InstantLocate:**
