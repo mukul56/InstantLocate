@@ -27,13 +27,16 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 
 **First you have to request for permissions which you declared  in your Manifest**
 
-1. Create an Array of Permissions 
-    
-    String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};   
+1. Create an Array of Permissions
+
+       String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+
+
+
     
 2. Request For Permissions
 
-     ActivityCompat.requestPermissions(this, permissions, 1); 
+        ActivityCompat.requestPermissions(this, permissions, 1); 
 
 
 
