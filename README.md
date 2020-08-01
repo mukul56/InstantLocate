@@ -44,7 +44,8 @@ Fetching an Current Accurate Location in android is not an easy task, So to make
 
 
 **Initialize the InstantLocate by using following line:**
-    InstantLocate instantLocate = new InstantLocate(this);      
+
+     InstantLocate instantLocate = new InstantLocate(this);      
 
 
 **Methods of InstantLocate:**
